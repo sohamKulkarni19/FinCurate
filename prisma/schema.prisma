@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Scheme {
+  id           Int              @id
+  schemeCode   Int              @unique
+  name         String
+  category     String?
+  navs         NavObservation[]
+  lastSyncedAt DateTime?
+}
+
+model NavObservation {
+  id       Int      @id @default(autoincrement())
+  schemeId Int
+  navDate  DateTime
+  nav      Float
+  scheme   Scheme   @relation(fields: [schemeId], references: [id])
+
+  @@unique([schemeId, navDate])
+}

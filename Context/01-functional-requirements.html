@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Functional requirements for a localhost Indian mutual fund research and shortlisting application.">
+  <title>Functional Requirements | Mutual Fund Research Tool</title>
+  <style>
+    :root{--ink:#17212b;--muted:#60707b;--line:#dce5e8;--paper:#fbfcfc;--panel:#fff;--teal:#2f7d78;--teal-soft:#e7f2f0;--blue:#416783;--blue-soft:#eaf1f6;--amber:#9a6a26;--amber-soft:#fbf2e3;--red:#9b4c4c;--red-soft:#f8eaea;--shadow:0 12px 34px rgba(28,48,58,.07);--radius:16px}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}a{color:var(--teal);text-decoration:none}a:hover{text-decoration:underline}code,.id{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;font-size:.88em}header{border-bottom:1px solid var(--line);background:linear-gradient(135deg,#f2f7f7 0%,#fbfcfc 58%,#f4f7fa 100%)}.hero{max-width:1180px;margin:auto;padding:56px 28px 44px}.eyebrow{color:var(--teal);font-size:12px;font-weight:750;letter-spacing:.12em;text-transform:uppercase}.hero h1{max-width:850px;margin:10px 0 12px;font-size:clamp(34px,5vw,58px);line-height:1.06;letter-spacing:-.035em}.lede{max-width:760px;margin:0;color:var(--muted);font-size:18px}.meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}.pill{border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.72);padding:6px 11px;color:#49606d;font-size:12px;font-weight:650}.docnav{border-top:1px solid rgba(220,229,232,.8);background:rgba(255,255,255,.72)}.docnav-inner{max-width:1180px;margin:auto;display:flex;gap:8px;padding:12px 28px;overflow:auto}.docnav a{white-space:nowrap;border-radius:9px;padding:7px 10px;color:#526572;font-size:13px}.docnav a.active{background:var(--teal-soft);color:#225e59;font-weight:700}.layout{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:220px minmax(0,1fr);gap:42px;padding:42px 28px 72px}.toc{position:sticky;top:24px;align-self:start;border-left:2px solid var(--line);padding-left:16px}.toc strong{display:block;margin-bottom:9px;font-size:12px;letter-spacing:.08em;text-transform:uppercase}.toc a{display:block;padding:4px 0;color:#657682;font-size:13px}.toc a:hover{color:var(--teal);text-decoration:none}main{min-width:0}section{scroll-margin-top:20px;margin:0 0 48px}h2{margin:0 0 15px;font-size:28px;line-height:1.2;letter-spacing:-.02em}h3{margin:28px 0 9px;font-size:19px;line-height:1.3}h4{margin:19px 0 7px;font-size:15px}p{margin:8px 0 13px}.note{border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:12px;background:var(--panel);padding:15px 18px;margin:18px 0}.note.warning{border-left-color:var(--amber);background:var(--amber-soft)}.note strong{display:block;margin-bottom:3px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);padding:19px;box-shadow:var(--shadow)}.card h3{margin:0 0 8px}.card p:last-child{margin-bottom:0}.kpi{font-size:25px;font-weight:760;letter-spacing:-.025em;color:var(--teal)}table{width:100%;border-collapse:separate;border-spacing:0;margin:14px 0 24px;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--panel);font-size:14px}th,td{padding:11px 13px;vertical-align:top;border-bottom:1px solid var(--line);text-align:left}th{background:#f1f5f5;color:#42535e;font-size:12px;letter-spacing:.035em;text-transform:uppercase}tr:last-child td{border-bottom:0}tbody tr:hover{background:#fafcfc}.status{display:inline-block;border-radius:999px;padding:2px 8px;background:var(--teal-soft);color:#255f5b;font-size:11px;font-weight:750}.priority{font-weight:750;color:var(--blue)}ul,ol{padding-left:22px}li{margin:5px 0}.req{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:17px 18px;margin:12px 0}.req-head{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-bottom:7px}.req .id{border-radius:7px;background:var(--blue-soft);color:#355a72;padding:3px 7px;font-weight:750}.req h3{margin:0;font-size:16px}.accept{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);color:#52636e}.accept strong{color:var(--ink)}.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;align-items:stretch;margin:18px 0}.flow div{position:relative;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:13px 10px;text-align:center;font-size:13px;font-weight:680}.flow div:not(:last-child):after{content:"";position:absolute;right:-9px;top:50%;width:9px;border-top:2px solid #b9c8cc}.small{font-size:13px;color:var(--muted)}footer{border-top:1px solid var(--line);padding:24px 28px;color:var(--muted);font-size:12px;text-align:center}@media(max-width:860px){.layout{grid-template-columns:1fr}.toc{position:static;border:1px solid var(--line);border-radius:12px;padding:14px 16px}.toc a{display:inline-block;margin-right:12px}.grid{grid-template-columns:1fr}.flow{grid-template-columns:1fr}.flow div:not(:last-child):after{display:none}.hero{padding-top:42px}}@media print{body{background:#fff;font-size:11pt}.docnav,.toc{display:none}.hero{padding:28px 0}.layout{display:block;padding:24px 0;max-width:none}.card,.req{box-shadow:none;break-inside:avoid}section{break-before:auto}.flow{grid-template-columns:repeat(5,1fr)}a{color:inherit;text-decoration:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="hero">
+      <div class="eyebrow">Project specification / Document 1 of 4</div>
+      <h1>Functional Requirements Document</h1>
+      <p class="lede">User behavior, analytical rules, screens, filters, outputs, and acceptance conditions for a localhost mutual fund research and shortlisting tool.</p>
+      <div class="meta"><span class="pill">Version 1.0</span><span class="pill">Status: Proposed baseline</span><span class="pill">Audience: Student developer and reviewer</span><span class="pill">Scope: Indian mutual funds</span></div>
+    </div>
+    <nav class="docnav" aria-label="Document set"><div class="docnav-inner">
+      <a class="active" href="01-functional-requirements.html">Functional requirements</a>
+      <a href="02-technical-requirements.html">Technical requirements</a>
+      <a href="03-proposed-technical-design.html">Proposed design</a>
+      <a href="04-prerequisite-checklist.html">Prerequisite checklist</a>
+    </div></nav>
+  </header>
+
+  <div class="layout">
+    <aside class="toc" aria-label="On this page">
+      <strong>On this page</strong>
+      <a href="#purpose">Purpose</a><a href="#scope">Scope</a><a href="#rules">Locked rules</a><a href="#journeys">User journeys</a><a href="#requirements">Requirements</a><a href="#calculations">Calculations</a><a href="#screens">Screens</a><a href="#quality">Functional quality</a><a href="#acceptance">Release acceptance</a>
+    </aside>
+
+    <main>
+      <section id="purpose">
+        <h2>1. Purpose and product outcome</h2>
+        <p>The product helps a user research, compare, screen, and shortlist currently investable Indian mutual funds using reproducible return and risk analytics. It is not intended to issue buy, sell, or hold recommendations.</p>
+        <div class="grid">
+          <div class="card"><div class="kpi">Discover</div><p>Rank funds within a comparable universe, then narrow the result using evidence-based filters.</p></div>
+          <div class="card"><div class="kpi">Understand</div><p>Inspect trailing, rolling, benchmark-relative, drawdown, and risk-adjusted performance.</p></div>
+          <div class="card"><div class="kpi">Compare</div><p>Plot up to five funds, with SIP and lump-sum outcomes calculated over identical windows.</p></div>
+          <div class="card"><div class="kpi">Shortlist</div><p>Save a small set of candidates and display their trade-offs without an opaque composite rating.</p></div>
+        </div>
+      </section>
+
+      <section id="scope">
+        <h2>2. Scope</h2>
+        <table>
+          <thead><tr><th>Included in version 1</th><th>Excluded from version 1</th></tr></thead>
+          <tbody><tr><td>Active, open-ended Direct Growth schemes; active funds, index funds, and funds of funds; NAV and normalized-growth charts; trailing returns; rolling SIP XIRR and lump-sum CAGR; fixed benchmark choices for eligible domestic-equity-oriented schemes; risk and drawdown measures; category rankings; CSV export; local shortlist.</td><td>Regular plans, IDCW options, closed-ended or inactive schemes, ETFs without a Direct Growth plan, portfolio holdings analysis, fund-manager qualitative scoring, tax calculations, exit-load modelling, investment execution, personalized investment advice, cloud accounts, and public hosting.</td></tr></tbody>
+        </table>
+        <div class="note warning"><strong>Interpretation boundary</strong>Past returns and statistical rankings are evidence about historical behavior, not forecasts. The interface must show this limitation near ranking and shortlist results.</div>
+      </section>
+
+      <section id="rules">
+        <h2>3. Locked business rules</h2>
+        <table>
+          <thead><tr><th>ID</th><th>Rule</th><th>Decision</th></tr></thead>
+          <tbody>
+            <tr><td class="id">BR-01</td><td>Eligible scheme universe</td><td>Only active, open-ended schemes explicitly identified as Direct Growth. Include active, index, and FoF schemes.</td></tr>
+            <tr><td class="id">BR-02</td><td>Rolling return presets</td><td>6 months, 1 year, 3 years, 5 years, 7 years, and 10 years. No custom rolling duration.</td></tr>
+            <tr><td class="id">BR-03</td><td>SIP date</td><td>Use the first available NAV on or after the first calendar day of each month.</td></tr>
+            <tr><td class="id">BR-04</td><td>SIP window</td><td>For an M-month window, make M contributions at month offsets 0 through M-1 and value the accumulated units at month M.</td></tr>
+            <tr><td class="id">BR-05</td><td>Annualization</td><td>SIP uses dated-cash-flow XIRR. Lump sum uses actual-day CAGR. Results below one year remain annualized and receive a warning.</td></tr>
+            <tr><td class="id">BR-06</td><td>Rolling frequency</td><td>Start a new observation each calendar month.</td></tr>
+            <tr><td class="id">BR-07</td><td>Comparable period</td><td>Rankings and multi-fund statistics default to the common overlapping period. An individual full-history view is optional.</td></tr>
+            <tr><td class="id">BR-08</td><td>Benchmark series</td><td>Use only Nifty 50 TRI, Nifty Next 50 TRI, Nifty 500 TRI, Nifty Midcap 150 TRI, and Nifty Smallcap 250 TRI.</td></tr>
+            <tr><td class="id">BR-09</td><td>Benchmark eligibility</td><td>Enable for domestic-equity-oriented funds and domestic equity FoFs. Disable for debt, hybrid, and international FoFs.</td></tr>
+            <tr><td class="id">BR-10</td><td>Benchmark choice</td><td>Recommend a category-appropriate benchmark, allow another eligible choice, and warn rather than block when it is unusual.</td></tr>
+            <tr><td class="id">BR-11</td><td>Risk-free proxy</td><td>Use a validated historical Indian 91-day Treasury bill series for Sharpe and Sortino calculations. Never substitute an undisclosed constant.</td></tr>
+            <tr><td class="id">BR-12</td><td>Ranking philosophy</td><td>Rank only within a clearly identified universe. Do not create a hidden or universal composite score.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="journeys">
+        <h2>4. Primary user journeys</h2>
+        <div class="flow" aria-label="Shortlisting flow"><div>Choose category</div><div>Choose period</div><div>Apply evidence filters</div><div>Inspect candidates</div><div>Save shortlist</div></div>
+        <h3>Journey A: inspect one fund</h3>
+        <ol><li>Search for and select an eligible scheme.</li><li>Review its normalized growth chart, NAV, trailing returns, risk metrics, and drawdowns.</li><li>If eligible, choose a TRI benchmark and inspect trailing and rolling excess returns.</li><li>Download the displayed data or add the fund to the local shortlist.</li></ol>
+        <h3>Journey B: compare funds</h3>
+        <ol><li>Select two to five eligible funds.</li><li>Choose a rolling preset and a range of commencement dates.</li><li>Toggle SIP, lump sum, or both.</li><li>Review common-period charts and statistics, including benchmark-relative results where applicable.</li></ol>
+        <h3>Journey C: screen a category</h3>
+        <ol><li>Select a category, rolling preset, and common analysis period.</li><li>Rank by median rolling SIP XIRR or another supported column.</li><li>Filter by downside, consistency, risk-adjusted, and benchmark-relative measures.</li><li>Compare and save the resulting candidates.</li></ol>
+      </section>
+
+      <section id="requirements">
+        <h2>5. Functional requirements</h2>
+
+        <h3>5.1 Universe, data status, and search</h3>
+        <div class="req"><div class="req-head"><span class="id">FR-101</span><h3>Eligible-universe enforcement</h3><span class="status">Must</span></div><p>The system shall expose only active, open-ended Direct Growth schemes in searches, comparisons, and rankings.</p><div class="accept"><strong>Acceptance:</strong> regular, IDCW, inactive, and closed-ended records do not appear; index funds and FoFs meeting all inclusion rules do appear.</div></div>
+        <div class="req"><div class="req-head"><span class="id">FR-102</span><h3>Scheme discovery</h3><span class="status">Must</span></div><p>The user shall search by scheme name or fund house and filter by current category and scheme family.</p><div class="accept"><strong>Acceptance:</strong> results display canonical name, fund house, current category, inception date, and latest NAV date.</div></div>
+        <div class="req"><div class="req-head"><span class="id">FR-103</span><h3>Data freshness and evidence</h3><span class="status">Must</span></div><p>Every page shall expose the latest data date. A fund with gaps, stale NAVs, unresolved category, or insufficient history shall carry a visible status and be excluded from affected rankings.</p></div>
+
+        <h3>5.2 Fund explorer and trailing performance</h3>
+        <div class="req"><div class="req-head"><span class="id">FR-201</span><h3>Fund overview</h3><span class="status">Must</span></div><p>The fund page shall show canonical scheme identity, fund house, category, plan and option, inception date, latest NAV, latest NAV date, available history, and benchmark eligibility.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-202</span><h3>Growth and NAV chart</h3><span class="status">Must</span></div><p>The default chart shall show the growth of a nominal Rs 10,000 investment. The user may toggle to raw NAV. Eligible benchmark and comparison series shall be rebased to the same starting value.</p><div class="accept"><strong>Acceptance:</strong> hover displays date and value; date zoom is available; missing observations are not silently interpolated.</div></div>
+        <div class="req"><div class="req-head"><span class="id">FR-203</span><h3>Trailing-return table</h3><span class="status">Must</span></div><p>Display 1-, 3-, and 6-month absolute returns; 1-, 3-, 5-, and 10-year CAGR; and since-inception CAGR. Unsupported periods shall show "insufficient history," not zero.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-204</span><h3>Trailing benchmark comparison</h3><span class="status">Must</span></div><p>For an eligible benchmark selection, display fund return, benchmark return, excess percentage points, and beat/did-not-beat status for each available trailing period.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-205</span><h3>Category context</h3><span class="status">Should</span></div><p>Display the category median and the selected fund's percentile for trailing periods when a comparable category sample exists.</p></div>
+
+        <h3>5.3 Rolling SIP and lump-sum analysis</h3>
+        <div class="req"><div class="req-head"><span class="id">FR-301</span><h3>Preset selection</h3><span class="status">Must</span></div><p>The user shall choose exactly one preset: 6 months, 1 year, 3 years, 5 years, 7 years, or 10 years.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-302</span><h3>Analysis modes</h3><span class="status">Must</span></div><p>The user shall toggle between SIP only, lump sum only, and both. SIP and lump-sum observations shall use identical start and valuation dates.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-303</span><h3>Rolling chart</h3><span class="status">Must</span></div><p>Plot annualized return against investment commencement month for up to five funds. Use one color per fund, solid lines for SIP, and dashed lines for lump sum. Hover shall show fund, mode, start date, valuation date, and return.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-304</span><h3>Date-range filtering</h3><span class="status">Must</span></div><p>The user shall narrow the displayed commencement-date range without changing the rolling duration.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-305</span><h3>Rolling statistics</h3><span class="status">Must</span></div><p>For each fund and mode, show mean, median, standard deviation of outcomes, minimum, maximum, P10, P25, P75, P90, negative-return frequency, number of rolling observations, and number of non-overlapping windows.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-306</span><h3>Return distribution</h3><span class="status">Must</span></div><p>Show the percentage of observations in clearly defined return bands. The user may inspect the underlying observations used for every count.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-307</span><h3>Rolling benchmark comparison</h3><span class="status">Must</span></div><p>For eligible funds, simulate the same SIP or lump-sum cash flows against the selected TRI. Show benchmark win rate, median excess return, P10 excess return, and benchmark-relative distribution.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-308</span><h3>Evidence warning</h3><span class="status">Must</span></div><p>Explain that adjacent rolling windows overlap and are not independent. Highlight limited evidence for long presets or short-lived funds.</p></div>
+
+        <h3>5.4 Risk, downside, and consistency</h3>
+        <div class="req"><div class="req-head"><span class="id">FR-401</span><h3>Risk-adjusted metrics</h3><span class="status">Must</span></div><p>Calculate Sharpe and Sortino ratios from monthly returns over the selected common period using the disclosed historical 91-day Treasury bill proxy.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-402</span><h3>Benchmark-relative risk</h3><span class="status">Must</span></div><p>For benchmark-eligible funds, calculate upside capture, downside capture, information ratio, and tracking error from aligned monthly observations.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-403</span><h3>Downside evidence</h3><span class="status">Must</span></div><p>Show maximum drawdown, worst 1-year return, worst 3-year return, drawdown start, trough, recovery date, and recovery duration where history permits.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-404</span><h3>Underwater chart</h3><span class="status">Should</span></div><p>Plot percentage decline from the previous peak and allow the user to inspect historical drawdown episodes.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-405</span><h3>Multi-period consistency</h3><span class="status">Should</span></div><p>Show category percentile or top-quartile status across supported rolling presets and compare recent 3- and 5-year evidence with full common history.</p></div>
+
+        <h3>5.5 Screener, ranking, and shortlist</h3>
+        <div class="req"><div class="req-head"><span class="id">FR-501</span><h3>Comparable ranking universe</h3><span class="status">Must</span></div><p>Rank by current category by default. An all-funds exploratory view may be provided but shall warn that asset classes are not directly comparable.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-502</span><h3>Ranking controls</h3><span class="status">Must</span></div><p>The user shall choose category, rolling preset, analysis period, minimum history, and minimum observation count before results are ranked.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-503</span><h3>Filterable evidence</h3><span class="status">Must</span></div><p>Filters shall include median SIP XIRR, median lump-sum CAGR, P10 return, negative-return frequency, benchmark win rate, median excess return, Sharpe, Sortino, upside capture, downside capture, information ratio, tracking error, and maximum drawdown where applicable.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-504</span><h3>Transparent exclusions</h3><span class="status">Must</span></div><p>The screener shall report why a scheme was excluded: insufficient history, missing data, stale status, category mismatch, unavailable benchmark data, or failed user filter.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-505</span><h3>Local shortlist</h3><span class="status">Must</span></div><p>The user shall add or remove funds from a persistent local shortlist and compare up to five shortlisted funds in a trade-off matrix.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-506</span><h3>No hidden score</h3><span class="status">Must</span></div><p>The application shall not collapse all evidence into an unexplained universal score. Any category percentile or pass/fail flag shall expose its inputs and period.</p></div>
+
+        <h3>5.6 Export and disclosures</h3>
+        <div class="req"><div class="req-head"><span class="id">FR-601</span><h3>CSV export</h3><span class="status">Must</span></div><p>Allow export of trailing tables, rolling observations, summary statistics, and screener results currently in scope. Exports shall include calculation date, filters, benchmark, and data-through date.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-602</span><h3>Methodology visibility</h3><span class="status">Must</span></div><p>Every calculated metric shall link to a plain-language definition containing formula, frequency, period, data convention, and known limitations.</p></div>
+        <div class="req"><div class="req-head"><span class="id">FR-603</span><h3>Research disclaimer</h3><span class="status">Must</span></div><p>Ranking and shortlist screens shall state that past performance is not indicative of future results and that the tool does not provide investment advice.</p></div>
+      </section>
+
+      <section id="calculations">
+        <h2>6. Functional calculation definitions</h2>
+        <table>
+          <thead><tr><th>Measure</th><th>Required behavior</th></tr></thead>
+          <tbody>
+            <tr><td>SIP rolling XIRR</td><td>Use equal nominal monthly outflows and one terminal inflow equal to total accumulated units multiplied by the valuation NAV. Because scaling every cash flow equally leaves XIRR unchanged, the nominal SIP amount is not a user input.</td></tr>
+            <tr><td>Lump-sum rolling CAGR</td><td>Use actual elapsed days between selected start and valuation NAVs. Annualize every preset, including six months.</td></tr>
+            <tr><td>Trailing return</td><td>Use the latest valid NAV as the endpoint and the first valid NAV on or after the target historical date. Show absolute return below one year and CAGR from one year onward.</td></tr>
+            <tr><td>Sharpe</td><td>Annualized mean monthly excess return divided by monthly excess-return standard deviation; risk-free observations must align by month.</td></tr>
+            <tr><td>Sortino</td><td>Annualized mean monthly excess return divided by downside deviation of negative monthly excess returns.</td></tr>
+            <tr><td>Capture ratios</td><td>Use fund and benchmark monthly returns on benchmark-up and benchmark-down months respectively; periods and alignment must be identical.</td></tr>
+            <tr><td>Information ratio</td><td>Annualized mean monthly active return divided by annualized tracking error.</td></tr>
+            <tr><td>Maximum drawdown</td><td>Largest percentage decline from a prior peak in the normalized value series; recovery occurs when the previous peak is regained.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="screens">
+        <h2>7. Screen inventory</h2>
+        <table>
+          <thead><tr><th>Screen</th><th>Primary content</th><th>Main actions</th></tr></thead>
+          <tbody>
+            <tr><td>Home / data status</td><td>Purpose, latest refresh, dataset health, quick navigation.</td><td>Refresh data, open explorer, open screener.</td></tr>
+            <tr><td>Fund explorer</td><td>Fund identity, growth/NAV chart, trailing returns, benchmark and category comparison, risk and drawdown.</td><td>Select fund and benchmark, change view, export, shortlist.</td></tr>
+            <tr><td>Rolling laboratory</td><td>Up to five funds, SIP/lump toggle, preset, commencement-date range, graph, distribution, statistics.</td><td>Add/remove funds, choose period, zoom, export.</td></tr>
+            <tr><td>Fund screener</td><td>Comparable-universe controls, filters, sortable results, exclusion reasons.</td><td>Filter, sort, inspect, shortlist, export.</td></tr>
+            <tr><td>Shortlist</td><td>Selected candidates and trade-off matrix.</td><td>Compare up to five, remove, export.</td></tr>
+            <tr><td>Methodology</td><td>Definitions, formulas, data sources, limitations, version and refresh history.</td><td>Inspect evidence and calculation rules.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="quality">
+        <h2>8. Functional quality rules</h2>
+        <ul>
+          <li>No missing value may silently become zero.</li>
+          <li>No comparison may silently use different periods.</li>
+          <li>No price index may be labeled or treated as a TRI benchmark.</li>
+          <li>No benchmark-dependent metric may appear when benchmark data is disabled or incomplete.</li>
+          <li>Every percentage shall identify whether it is absolute, annualized, excess percentage points, or a frequency.</li>
+          <li>Every chart shall expose the calculation window through labels or hover content.</li>
+          <li>All-fund rankings shall remain explicitly exploratory; category ranking is the decision-oriented default.</li>
+          <li>Filters shall use inclusive boundary behavior and show the active values above the results.</li>
+        </ul>
+      </section>
+
+      <section id="acceptance">
+        <h2>9. Version 1 release acceptance</h2>
+        <div class="note"><strong>Release gate</strong>Version 1 is functionally acceptable only when every Must requirement has a passing test, the prerequisite checklist has no unresolved blocker, and independently calculated fixtures agree within the documented tolerance.</div>
+        <ul>
+          <li>A user can find every eligible test scheme and none of the deliberately ineligible fixtures.</li>
+          <li>All six rolling presets produce reproducible SIP and lump-sum observations.</li>
+          <li>Five-fund comparison uses a provable common period and remains legible at laptop width.</li>
+          <li>Eligible equity funds can be compared against all five validated TRI datasets.</li>
+          <li>Debt, hybrid, and international FoF pages hide benchmark-dependent metrics without hiding independent risk metrics.</li>
+          <li>The screener can reduce a large category result through multiple filters and explain every exclusion.</li>
+          <li>Exports reproduce the visible filters, dates, source versions, and summary values.</li>
+          <li>The application remains usable without internet access after datasets have been refreshed and cached.</li>
+        </ul>
+        <p class="small">Requirements marked Should may move to a later iteration if they do not compromise calculation integrity or the primary shortlisting journey.</p>
+      </section>
+    </main>
+  </div>
+  <footer>Mutual Fund Research Tool / Functional Requirements / Version 1.0</footer>
+</body>
+</html>
