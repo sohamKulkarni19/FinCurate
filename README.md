@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FinCurate 2.0 ??
 
-## Getting Started
+[![Live Demo](https://img.shields.io/badge/Live-Demo-2dd4bf?style=for-the-badge&logo=vercel)](https://your-deployment-url-here.vercel.app/)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?style=for-the-badge&logo=prisma)](https://prisma.io)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com)
 
-First, run the development server:
+FinCurate 2.0 is a modern, high-performance mutual fund curation and analysis dashboard designed to help Indian retail investors make data-driven decisions. It fetches and analyzes real-time and historical NAV data from the [MFapi.in](https://www.mfapi.in/) open API.
 
-```bash
+## ? Features
+
+- **Blazing Fast Autocomplete Search**: Instantly query a master database of over 37,000 mutual funds.
+- **Apples-to-Apples Comparisons**: Shortlist multiple funds and plot their normalized "Growth of ?10,000" on a shared, interactive timeline.
+- **Advanced SIP Analytics**: Discover the true historical performance of a fund by calculating the average, minimum, and maximum XIRR across every single monthly rolling window (1Y, 3Y, 5Y, 10Y).
+- **Lumpsum CAGR Tracking**: Visualize point-to-point rolling CAGR for one-time investments.
+- **Client-Side Persistence**: Your shortlisted funds are persisted seamlessly using Zustand and local storage.
+- **Lazy Data Sync**: The system intelligently caches massive historical NAV datasets in a serverless Prisma Postgres database, ensuring instant load times on subsequent visits.
+- **Premium UI/UX**: Built with a sleek, dark glassmorphism aesthetic using Tailwind CSS and interactive charts powered by Recharts.
+
+## ?? Tech Stack
+
+- **Framework**: Next.js (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS, Lucide React
+- **State Management**: Zustand
+- **Database**: Prisma Postgres
+- **ORM**: Prisma Client v7 (with Edge-compatible @prisma/adapter-pg)
+- **Charting**: Recharts
+- **Math/Date Utilities**: date-fns, custom XIRR / CAGR algorithms
+
+## ?? Getting Started Locally
+
+### Prerequisites
+- Node.js 18+
+- A Prisma Postgres database URL (or a local PostgreSQL instance)
+
+### 1. Clone the repository
+\\\ash
+git clone https://github.com/yourusername/fincurate-2.0.git
+cd fincurate-2.0
+\\\
+
+### 2. Install dependencies
+\\\ash
+npm install
+\\\
+
+### 3. Setup Environment Variables
+Create a .env file in the root directory and add your PostgreSQL connection string:
+\\\env
+DATABASE_URL="postgres://your_user:your_password@your_host/your_db?sslmode=require"
+\\\
+
+### 4. Push the Database Schema
+Sync the Prisma schema to your database:
+\\\ash
+npx prisma migrate dev --name init
+\\\
+
+### 5. Seed the Database
+Populate the database with the master list of all Indian mutual funds:
+\\\ash
+npx tsx scripts/sync-master.ts
+\\\
+
+### 6. Run the Development Server
+\\\ash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
+\\\
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ?? Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This project is optimized for deployment on Vercel. 
 
-## Learn More
+1. Ensure your DATABASE_URL is configured in the Vercel Project Settings.
+2. The Prisma Postgres edge adapter (@prisma/adapter-pg) ensures database connections scale flawlessly inside serverless functions.
+3. Push to your master branch to trigger an automatic deployment!
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## ?? License
+MIT License
