@@ -1,14 +1,9 @@
 import { PrismaClient } from '../generated/prisma/client/client';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
-import Database from 'better-sqlite3';
-import * as path from 'path';
+import pg from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
 
-// Construct the absolute path to the database
-// In Next.js, process.cwd() points to the project root
-const dbPath = path.resolve(process.cwd(), 'data/database/mf.db');
-
-const sqlite = new Database(dbPath);
-const adapter = new PrismaBetterSqlite3({ url: `file:${dbPath}` });
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
 
 const prismaClientSingleton = () => {
   return new PrismaClient({ adapter });

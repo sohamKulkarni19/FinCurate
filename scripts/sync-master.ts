@@ -1,12 +1,13 @@
-import { PrismaClient } from '../src/generated/prisma/client/client';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import 'dotenv/config';
+import { PrismaClient } from '../src/generated/prisma/client/client.js';
+import pg from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { fetchSchemeList } from '../src/infrastructure/mfapi.js';
-import * as path from 'path';
 
-const dbPath = path.resolve(process.cwd(), 'data/database/mf.db');
-console.log(`Connecting to database at ${dbPath}`);
+console.log(`Connecting to database at Postgres...`);
 
-const adapter = new PrismaBetterSqlite3({ url: `file:${dbPath}` });
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
@@ -42,4 +43,5 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
+    await pool.end();
   });
