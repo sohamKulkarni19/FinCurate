@@ -8,12 +8,25 @@ datasource db {
 }
 
 model Scheme {
-  id           Int              @id
-  schemeCode   Int              @unique
-  name         String
-  category     String?
-  navs         NavObservation[]
-  lastSyncedAt DateTime?
+  id               Int              @id
+  schemeCode       Int              @unique
+  name             String
+  category         String?
+  navs             NavObservation[]
+  lastSyncedAt     DateTime?
+
+  // Analytics fields
+  return3M         Float?
+  return1Y         Float?
+  return3Y         Float?
+  return5Y         Float?
+  sharpeRatio      Float?
+  sortinoRatio     Float?
+  beta             Float?
+  alpha            Float?
+  upsideCapture    Float?
+  downsideCapture  Float?
+  informationRatio Float?
 }
 
 model NavObservation {
@@ -24,4 +37,10 @@ model NavObservation {
   scheme   Scheme   @relation(fields: [schemeId], references: [id])
 
   @@unique([schemeId, navDate])
+}
+
+model BenchmarkObservation {
+  id       Int      @id @default(autoincrement())
+  date     DateTime @unique
+  value    Float
 }

@@ -86,6 +86,41 @@ export default async function FundPage(props: Props) {
         </div>
       </div>
 
+      {/* Advanced Analytics */}
+      <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 p-6 rounded-2xl shadow-lg mb-8">
+        <h2 className="text-xl font-bold text-white mb-6">Advanced Analytics (1Y)</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div>
+            <h4 className="text-zinc-500 text-xs">Sharpe Ratio</h4>
+            <p className="text-lg font-semibold text-zinc-200">{scheme.sharpeRatio != null ? scheme.sharpeRatio.toFixed(2) : '-'}</p>
+          </div>
+          <div>
+            <h4 className="text-zinc-500 text-xs">Sortino Ratio</h4>
+            <p className="text-lg font-semibold text-zinc-200">{scheme.sortinoRatio != null ? scheme.sortinoRatio.toFixed(2) : '-'}</p>
+          </div>
+          <div>
+            <h4 className="text-zinc-500 text-xs">Beta</h4>
+            <p className="text-lg font-semibold text-zinc-200">{scheme.beta != null ? scheme.beta.toFixed(2) : '-'}</p>
+          </div>
+          <div>
+            <h4 className="text-zinc-500 text-xs">Alpha</h4>
+            <p className="text-lg font-semibold text-zinc-200">{scheme.alpha != null ? (scheme.alpha * 100).toFixed(2) + '%' : '-'}</p>
+          </div>
+          <div>
+            <h4 className="text-zinc-500 text-xs">Upside Capture</h4>
+            <p className="text-lg font-semibold text-zinc-200">{scheme.upsideCapture != null ? scheme.upsideCapture.toFixed(2) + '%' : '-'}</p>
+          </div>
+          <div>
+            <h4 className="text-zinc-500 text-xs">Downside Capture</h4>
+            <p className="text-lg font-semibold text-zinc-200">{scheme.downsideCapture != null ? scheme.downsideCapture.toFixed(2) + '%' : '-'}</p>
+          </div>
+          <div>
+            <h4 className="text-zinc-500 text-xs">Information Ratio</h4>
+            <p className="text-lg font-semibold text-zinc-200">{scheme.informationRatio != null ? scheme.informationRatio.toFixed(2) : '-'}</p>
+          </div>
+        </div>
+      </div>
+
       <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 p-6 rounded-2xl shadow-lg mb-8">
         <h2 className="text-xl font-bold text-white mb-6">Historical NAV</h2>
         <FundChart data={sortedNavs.map(n => ({ date: n.navDate.toISOString(), nav: n.nav }))} />

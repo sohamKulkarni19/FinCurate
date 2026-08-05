@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { calculateCAGR } from '@/domain/math';
 import { format } from 'date-fns';
 import { 
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine
 } from 'recharts';
 
 type RollingLumpsumAnalysisProps = {
@@ -67,19 +67,10 @@ export default function RollingLumpsumAnalysis({ navs }: RollingLumpsumAnalysisP
     return results;
   }, [parsedNavs, lumpsumAmount, durationYears]);
 
-  if (rollingData.length === 0) {
-    return (
-      <div className="text-zinc-500 text-center py-10">
-        Not enough historical data for a {durationYears}-year rolling analysis.
-      </div>
-    );
-  }
-
-  const avgCagr = rollingData.reduce((sum, d) => sum + d.cagr, 0) / rollingData.length;
-  const maxCagr = Math.max(...rollingData.map(d => d.cagr));
-  const minCagr = Math.min(...rollingData.map(d => d.cagr));
-  
-  const avgValue = rollingData.reduce((sum, d) => sum + d.finalValue, 0) / rollingData.length;
+  const avgCagr = rollingData.length > 0 ? rollingData.reduce((sum, d) => sum + d.cagr, 0) / rollingData.length : 0;
+  const maxCagr = rollingData.length > 0 ? Math.max(...rollingData.map(d => d.cagr)) : 0;
+  const minCagr = rollingData.length > 0 ? Math.min(...rollingData.map(d => d.cagr)) : 0;
+  const avgValue = rollingData.length > 0 ? rollingData.reduce((sum, d) => sum + d.finalValue, 0) / rollingData.length : 0;
 
   return (
     <div>
@@ -97,7 +88,7 @@ export default function RollingLumpsumAnalysis({ navs }: RollingLumpsumAnalysisP
         <div>
           <label className="block text-xs font-medium text-zinc-500 mb-1">Duration</label>
           <div className="flex bg-zinc-900 border border-zinc-700 rounded-lg p-1">
-            {[1, 3, 5, 10].map(years => (
+            {[0.25, 0.5, 1, 3, 5, 10].map(years => (
               <button
                 key={years}
                 onClick={() => setDurationYears(years)}
@@ -107,35 +98,41 @@ export default function RollingLumpsumAnalysis({ navs }: RollingLumpsumAnalysisP
                     : 'text-zinc-400 hover:text-white'
                 }`}
               >
-                {years}Y
+                {years === 0.25 ? '3M' : years === 0.5 ? '6M' : `${years}Y`}
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 text-center">
-        <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
-          <div className="text-zinc-500 text-xs">Average CAGR</div>
-          <div className="text-xl font-bold text-white mt-1">{avgCagr.toFixed(2)}%</div>
+      {rollingData.length === 0 ? (
+        <div className="text-zinc-500 text-center py-10">
+          Not enough historical data for a {durationYears}-year rolling analysis.
         </div>
-        <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
-          <div className="text-zinc-500 text-xs">Max CAGR</div>
-          <div className="text-xl font-bold text-teal-400 mt-1">{maxCagr.toFixed(2)}%</div>
-        </div>
-        <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
-          <div className="text-zinc-500 text-xs">Min CAGR</div>
-          <div className="text-xl font-bold text-red-400 mt-1">{minCagr.toFixed(2)}%</div>
-        </div>
-        <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
-          <div className="text-zinc-500 text-xs">Avg Final Value</div>
-          <div className="text-xl font-bold text-indigo-400 mt-1">₹{avgValue.toFixed(0)}</div>
-        </div>
-      </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 text-center">
+            <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
+              <div className="text-zinc-500 text-xs">Average CAGR</div>
+              <div className="text-xl font-bold text-white mt-1">{avgCagr.toFixed(2)}%</div>
+            </div>
+            <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
+              <div className="text-zinc-500 text-xs">Max CAGR</div>
+              <div className="text-xl font-bold text-teal-400 mt-1">{maxCagr.toFixed(2)}%</div>
+            </div>
+            <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
+              <div className="text-zinc-500 text-xs">Min CAGR</div>
+              <div className="text-xl font-bold text-red-400 mt-1">{minCagr.toFixed(2)}%</div>
+            </div>
+            <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
+              <div className="text-zinc-500 text-xs">Avg Final Value</div>
+              <div className="text-xl font-bold text-indigo-400 mt-1">₹{avgValue.toFixed(0)}</div>
+            </div>
+          </div>
 
-      <div className="h-[300px] w-full mt-4">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={rollingData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+          <div className="h-[300px] w-full mt-4">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={rollingData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
             <XAxis 
               dataKey="endDate" 
@@ -150,7 +147,9 @@ export default function RollingLumpsumAnalysis({ navs }: RollingLumpsumAnalysisP
               tickFormatter={(val) => `${val.toFixed(0)}%`}
               axisLine={false}
               tickLine={false}
+              width={80}
             />
+            <ReferenceLine y={0} stroke="#94a3b8" strokeDasharray="3 3" opacity={0.5} />
             <Tooltip 
               contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px' }}
               itemStyle={{ color: '#818cf8' }}
@@ -173,6 +172,8 @@ export default function RollingLumpsumAnalysis({ navs }: RollingLumpsumAnalysisP
           </LineChart>
         </ResponsiveContainer>
       </div>
+      </>
+      )}
     </div>
   );
 }

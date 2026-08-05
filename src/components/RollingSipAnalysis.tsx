@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { generateSipCashFlows, calculateXIRR } from '@/domain/math';
 import { format } from 'date-fns';
 import { 
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine
 } from 'recharts';
 
 type RollingSipAnalysisProps = {
@@ -68,7 +68,8 @@ export default function RollingSipAnalysis({ navs }: RollingSipAnalysisProps) {
       if (xirr > -0.99 && xirr < 2.0) { 
         results.push({
           endDate: parsedNavs[endIndex].date.toISOString(),
-          xirr: xirr * 100
+          xirr: xirr * 100,
+          finalAmount: flows[flows.length - 1].amount
         });
       }
     }
@@ -76,17 +77,10 @@ export default function RollingSipAnalysis({ navs }: RollingSipAnalysisProps) {
     return results;
   }, [parsedNavs, sipAmount, durationYears]);
 
-  if (rollingData.length === 0) {
-    return (
-      <div className="text-zinc-500 text-center py-10">
-        Not enough historical data for a {durationYears}-year rolling analysis.
-      </div>
-    );
-  }
-
-  const avgXirr = rollingData.reduce((sum, d) => sum + d.xirr, 0) / rollingData.length;
-  const maxXirr = Math.max(...rollingData.map(d => d.xirr));
-  const minXirr = Math.min(...rollingData.map(d => d.xirr));
+  const avgXirr = rollingData.length > 0 ? rollingData.reduce((sum, d) => sum + d.xirr, 0) / rollingData.length : 0;
+  const maxXirr = rollingData.length > 0 ? Math.max(...rollingData.map(d => d.xirr)) : 0;
+  const minXirr = rollingData.length > 0 ? Math.min(...rollingData.map(d => d.xirr)) : 0;
+  const avgFinalAmount = rollingData.length > 0 ? rollingData.reduce((sum, d) => sum + d.finalAmount, 0) / rollingData.length : 0;
 
   return (
     <div>
@@ -104,7 +98,7 @@ export default function RollingSipAnalysis({ navs }: RollingSipAnalysisProps) {
         <div>
           <label className="block text-xs font-medium text-zinc-500 mb-1">Duration</label>
           <div className="flex bg-zinc-900 border border-zinc-700 rounded-lg p-1">
-            {[1, 3, 5, 10].map(years => (
+            {[0.25, 0.5, 1, 3, 5, 10].map(years => (
               <button
                 key={years}
                 onClick={() => setDurationYears(years)}
@@ -114,30 +108,40 @@ export default function RollingSipAnalysis({ navs }: RollingSipAnalysisProps) {
                     : 'text-zinc-400 hover:text-white'
                 }`}
               >
-                {years}Y
+                {years === 0.25 ? '3M' : years === 0.5 ? '6M' : `${years}Y`}
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-8 text-center">
-        <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
-          <div className="text-zinc-500 text-xs">Average XIRR</div>
-          <div className="text-xl font-bold text-white mt-1">{avgXirr.toFixed(2)}%</div>
+      {rollingData.length === 0 ? (
+        <div className="text-zinc-500 text-center py-10">
+          Not enough historical data for a {durationYears}-year rolling analysis.
         </div>
-        <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
-          <div className="text-zinc-500 text-xs">Max XIRR</div>
-          <div className="text-xl font-bold text-teal-400 mt-1">{maxXirr.toFixed(2)}%</div>
-        </div>
-        <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
-          <div className="text-zinc-500 text-xs">Min XIRR</div>
-          <div className="text-xl font-bold text-red-400 mt-1">{minXirr.toFixed(2)}%</div>
-        </div>
-      </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 text-center">
+            <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
+              <div className="text-zinc-500 text-xs">Average XIRR</div>
+              <div className="text-xl font-bold text-white mt-1">{avgXirr.toFixed(2)}%</div>
+            </div>
+            <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
+              <div className="text-zinc-500 text-xs">Max XIRR</div>
+              <div className="text-xl font-bold text-teal-400 mt-1">{maxXirr.toFixed(2)}%</div>
+            </div>
+            <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
+              <div className="text-zinc-500 text-xs">Min XIRR</div>
+              <div className="text-xl font-bold text-red-400 mt-1">{minXirr.toFixed(2)}%</div>
+            </div>
+            <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
+              <div className="text-zinc-500 text-xs">Avg Final Amount</div>
+              <div className="text-xl font-bold text-teal-400 mt-1">₹{avgFinalAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
+            </div>
+          </div>
 
-      <div className="h-[300px] w-full mt-4">
-        <ResponsiveContainer width="100%" height="100%">
+          <div className="h-[300px] w-full mt-4">
+            <ResponsiveContainer width="100%" height="100%">
           <LineChart data={rollingData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
             <XAxis 
@@ -153,7 +157,9 @@ export default function RollingSipAnalysis({ navs }: RollingSipAnalysisProps) {
               tickFormatter={(val) => `${val.toFixed(0)}%`}
               axisLine={false}
               tickLine={false}
+              width={80}
             />
+            <ReferenceLine y={0} stroke="#94a3b8" strokeDasharray="3 3" opacity={0.5} />
             <Tooltip 
               contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px' }}
               itemStyle={{ color: '#2dd4bf' }}
@@ -172,6 +178,8 @@ export default function RollingSipAnalysis({ navs }: RollingSipAnalysisProps) {
           </LineChart>
         </ResponsiveContainer>
       </div>
+      </>
+      )}
     </div>
   );
 }

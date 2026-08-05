@@ -17,7 +17,7 @@ export async function searchSchemes(query: string) {
   const schemes = await prisma.scheme.findMany({
     where: {
       OR: [
-        { name: { contains: query } },
+        { name: { contains: query, mode: 'insensitive' } },
         ...(isNumeric ? [{ schemeCode: parseInt(query, 10) }] : [])
       ]
     },

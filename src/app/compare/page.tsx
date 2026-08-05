@@ -10,6 +10,8 @@ import {
 } from 'recharts';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import AutoAnalysis from '@/components/AutoAnalysis';
+import SearchAutocomplete from '@/components/SearchAutocomplete';
 
 // Pre-defined contrasting colors for lines
 const CHART_COLORS = ['#2dd4bf', '#818cf8', '#fbbf24', '#f87171', '#a78bfa', '#34d399'];
@@ -105,11 +107,14 @@ export default function ComparePage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
           </svg>
         </div>
-        <h2 className="text-3xl font-bold text-white mb-4">Not enough funds to compare</h2>
+        <h2 className="text-3xl font-bold text-white mb-4">Shortlist Empty</h2>
         <p className="text-zinc-400 max-w-md mb-8">
-          You need at least 2 funds in your shortlist to compare them. Go to the Dashboard, search for funds, and add them to your shortlist.
+          Search to add funds here directly, or see more details on the dashboard to build your shortlist.
         </p>
-        <Link href="/" className="px-6 py-3 bg-teal-500 text-zinc-950 font-bold rounded-xl hover:bg-teal-400 transition-colors">
+        <div className="w-full max-w-md mx-auto relative z-50">
+          <SearchAutocomplete />
+        </div>
+        <Link href="/" className="mt-8 px-6 py-3 bg-zinc-800 text-zinc-300 font-medium rounded-xl hover:bg-zinc-700 transition-colors">
           Go to Dashboard
         </Link>
       </div>
@@ -184,9 +189,11 @@ export default function ComparePage() {
             <thead>
               <tr className="bg-zinc-900 text-zinc-400 text-sm border-b border-zinc-800">
                 <th className="px-6 py-4 font-medium">Fund Name</th>
-                <th className="px-6 py-4 font-medium">Latest NAV</th>
-                <th className="px-6 py-4 font-medium">Inception Date</th>
-                <th className="px-6 py-4 font-medium">CAGR</th>
+                <th className="px-6 py-4 font-medium">1Y Return</th>
+                <th className="px-6 py-4 font-medium">3Y Return</th>
+                <th className="px-6 py-4 font-medium">Sharpe</th>
+                <th className="px-6 py-4 font-medium">Sortino</th>
+                <th className="px-6 py-4 font-medium">Beta</th>
                 <th className="px-6 py-4 font-medium">Max Drawdown</th>
               </tr>
             </thead>
@@ -199,9 +206,11 @@ export default function ComparePage() {
                       <span className="text-white font-medium group-hover:text-teal-400 transition-colors">{m.name}</span>
                     </Link>
                   </td>
-                  <td className="px-6 py-4 text-zinc-300">₹{m.latestNav.toFixed(2)}</td>
-                  <td className="px-6 py-4 text-zinc-400">{format(m.inceptionDate, 'dd MMM yyyy')}</td>
-                  <td className="px-6 py-4 font-medium text-teal-400">{m.cagr.toFixed(2)}%</td>
+                  <td className="px-6 py-4 text-zinc-300">{m.return1Y != null ? (m.return1Y * 100).toFixed(2) + '%' : '-'}</td>
+                  <td className="px-6 py-4 text-zinc-300">{m.return3Y != null ? (m.return3Y * 100).toFixed(2) + '%' : '-'}</td>
+                  <td className="px-6 py-4 text-zinc-300">{m.sharpeRatio != null ? m.sharpeRatio.toFixed(2) : '-'}</td>
+                  <td className="px-6 py-4 text-zinc-300">{m.sortinoRatio != null ? m.sortinoRatio.toFixed(2) : '-'}</td>
+                  <td className="px-6 py-4 text-zinc-300">{m.beta != null ? m.beta.toFixed(2) : '-'}</td>
                   <td className="px-6 py-4 font-medium text-red-400">{m.maxDrawdown.toFixed(2)}%</td>
                 </tr>
               ))}
@@ -209,6 +218,8 @@ export default function ComparePage() {
           </table>
         </div>
       </div>
+      
+      <AutoAnalysis funds={metrics} />
     </div>
   );
 }

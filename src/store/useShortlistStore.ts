@@ -11,6 +11,7 @@ interface ShortlistState {
   addFund: (fund: ShortlistedFund) => void;
   removeFund: (schemeCode: number) => void;
   isShortlisted: (schemeCode: number) => boolean;
+  clearShortlist: () => void;
 }
 
 export const useShortlistStore = create<ShortlistState>()(
@@ -30,6 +31,9 @@ export const useShortlistStore = create<ShortlistState>()(
       },
       isShortlisted: (schemeCode) => {
         return get().shortlist.some((f) => f.schemeCode === schemeCode);
+      },
+      clearShortlist: () => {
+        set({ shortlist: [] });
       },
     }),
     {
