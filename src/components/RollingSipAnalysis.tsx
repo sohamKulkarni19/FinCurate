@@ -124,15 +124,15 @@ export default function RollingSipAnalysis({ navs }: RollingSipAnalysisProps) {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 text-center">
             <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
               <div className="text-zinc-500 text-xs">Average XIRR</div>
-              <div className="text-xl font-bold text-white mt-1">{avgXirr.toFixed(2)}%</div>
+              <div className={`text-xl font-bold mt-1 ${avgXirr >= 0 ? 'text-teal-400' : 'text-rose-400'}`}>{avgXirr.toFixed(2)}%</div>
             </div>
             <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
               <div className="text-zinc-500 text-xs">Max XIRR</div>
-              <div className="text-xl font-bold text-teal-400 mt-1">{maxXirr.toFixed(2)}%</div>
+              <div className={`text-xl font-bold mt-1 ${maxXirr >= 0 ? 'text-teal-400' : 'text-rose-400'}`}>{maxXirr.toFixed(2)}%</div>
             </div>
             <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
               <div className="text-zinc-500 text-xs">Min XIRR</div>
-              <div className="text-xl font-bold text-red-400 mt-1">{minXirr.toFixed(2)}%</div>
+              <div className={`text-xl font-bold mt-1 ${minXirr >= 0 ? 'text-teal-400' : 'text-rose-400'}`}>{minXirr.toFixed(2)}%</div>
             </div>
             <div className="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
               <div className="text-zinc-500 text-xs">Avg Final Amount</div>

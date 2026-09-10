@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useShortlistStore } from '@/store/useShortlistStore';
 import { getMultipleSchemesDetails } from '@/app/actions/schemes';
-import { normalizeNavsForComparison, calculateCAGR, calculateMaxDrawdown } from '@/domain/math';
+import { normalizeNavsForComparison, calculateCAGR, calculateMaxDrawdown, generateSipCashFlows, calculateXIRR } from '@/domain/math';
 import { format } from 'date-fns';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
@@ -20,6 +20,7 @@ export default function ComparePage() {
   const shortlist = useShortlistStore(state => state.shortlist);
   const [loading, setLoading] = useState(true);
   const [fundsData, setFundsData] = useState<any[]>([]);
+  const [rollingDuration, setRollingDuration] = useState<number>(3);
 
   useEffect(() => {
     async function fetchData() {
@@ -48,9 +49,8 @@ export default function ComparePage() {
     return () => clearTimeout(timeoutId);
   }, [shortlist]);
 
-  const chartData = useMemo(() => {
-    if (fundsData.length === 0) return [];
-    const formattedInput = fundsData.map(f => ({
+  const formattedFunds = useMemo(() => {
+    return fundsData.map(f => ({
       schemeCode: f.schemeCode,
       name: f.name,
       navs: [...f.navs].sort((a, b) => a.navDate.getTime() - b.navDate.getTime()).map(n => ({
@@ -58,9 +58,108 @@ export default function ComparePage() {
         nav: n.nav
       }))
     }));
-    
-    return normalizeNavsForComparison(formattedInput, 10000);
   }, [fundsData]);
+
+  const chartData = useMemo(() => {
+    return normalizeNavsForComparison(formattedFunds, 10000);
+  }, [formattedFunds]);
+
+  const rollingChartData = useMemo(() => {
+    if (formattedFunds.length === 0) return [];
+
+    const durationDays = rollingDuration * 365.25;
+    const msPerDay = 1000 * 60 * 60 * 24;
+    const sipAmount = 10000;
+
+    // Find the latest common inception date
+    const startDates = formattedFunds.map(f => f.navs.length > 0 ? f.navs[0].date : new Date(0));
+    const commonStart = new Date(Math.max(...startDates.map(d => d.getTime())));
+
+    // The first window ends at commonStart + duration
+    const firstWindowEnd = new Date(commonStart.getTime() + durationDays * msPerDay);
+    
+    // Find the earliest common end date
+    const endDates = formattedFunds.map(f => f.navs.length > 0 ? f.navs[f.navs.length - 1].date : new Date(0));
+    const commonEnd = new Date(Math.min(...endDates.map(d => d.getTime())));
+
+    if (firstWindowEnd > commonEnd) return []; // Not enough data for this duration
+
+    // Generate monthly evaluation dates
+    const evalDates: Date[] = [];
+    let curr = new Date(firstWindowEnd);
+    while (curr <= commonEnd) {
+      evalDates.push(new Date(curr));
+      curr.setDate(curr.getDate() + 30);
+    }
+
+    const results = [];
+
+    for (const evalDate of evalDates) {
+      const windowStart = new Date(evalDate.getTime() - durationDays * msPerDay);
+      const point: any = { date: evalDate.toISOString() };
+
+      for (const f of formattedFunds) {
+        // Find the NAVs for this window
+        const windowNavs = f.navs.filter(n => n.date >= windowStart && n.date <= evalDate);
+        if (windowNavs.length < 2) continue;
+
+        // Downsample to monthly points
+        const monthlyNavs = [];
+        let currentMonth = -1;
+        for (const pt of windowNavs) {
+          if (pt.date.getMonth() !== currentMonth) {
+            monthlyNavs.push(pt);
+            currentMonth = pt.date.getMonth();
+          }
+        }
+
+        const flows = generateSipCashFlows(sipAmount, monthlyNavs);
+        const xirr = calculateXIRR(flows);
+
+        if (xirr > -0.99 && xirr < 2.0) {
+          point[f.name] = xirr * 100;
+        }
+      }
+      
+      if (Object.keys(point).length > 1) {
+        results.push(point);
+      }
+    }
+
+    return results;
+  }, [formattedFunds, rollingDuration]);
+
+  const winRateStat = useMemo(() => {
+    if (rollingChartData.length === 0 || formattedFunds.length < 2) return null;
+    
+    // Compare the first two funds in the shortlist
+    const f1 = formattedFunds[0].name;
+    const f2 = formattedFunds[1].name;
+    
+    let f1Wins = 0;
+    let totalValid = 0;
+    
+    for (const pt of rollingChartData) {
+      if (pt[f1] !== undefined && pt[f2] !== undefined) {
+        totalValid++;
+        if (pt[f1] > pt[f2]) f1Wins++;
+      }
+    }
+    
+    if (totalValid === 0) return null;
+    
+    const winRate = (f1Wins / totalValid) * 100;
+    
+    if (winRate === 50) {
+      return `${f1} and ${f2} have matched performance over ${rollingDuration}-year rolling periods.`;
+    }
+    
+    const winner = winRate > 50 ? f1 : f2;
+    const loser = winRate > 50 ? f2 : f1;
+    const rate = winRate > 50 ? winRate : 100 - winRate;
+    
+    return `**${winner}** outperformed **${loser}** in **${rate.toFixed(0)}%** of all ${rollingDuration}-year rolling periods.`;
+  }, [rollingChartData, formattedFunds, rollingDuration]);
 
   // Compute metrics for the table
   const metrics = useMemo(() => {
@@ -176,6 +275,90 @@ export default function ComparePage() {
               ))}
             </LineChart>
           </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Rolling SIP Chart */}
+      <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 p-6 rounded-2xl shadow-lg mb-8">
+        <div className="flex flex-col md:flex-row md:items-start justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-bold text-white mb-2">Rolling SIP Returns (XIRR)</h2>
+            <p className="text-zinc-400 text-sm">
+              Comparing systematic investment performance over rolling {rollingDuration}-year windows.
+            </p>
+          </div>
+          <div className="mt-4 md:mt-0 flex bg-zinc-900 border border-zinc-700 rounded-lg p-1 shrink-0">
+            {[1, 3, 5, 10].map(years => (
+              <button
+                key={years}
+                onClick={() => setRollingDuration(years)}
+                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  rollingDuration === years 
+                    ? 'bg-teal-500 text-zinc-950' 
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                {years}Y
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {winRateStat && (
+          <div className="mb-6 p-4 bg-teal-500/10 border border-teal-500/30 rounded-xl">
+            <p className="text-teal-400 text-sm font-medium" dangerouslySetInnerHTML={{ __html: winRateStat.replace(/\*\*(.*?)\*\*/g, '<span class="text-white font-bold">$1</span>') }} />
+          </div>
+        )}
+
+        <div className="h-[400px] w-full">
+          {rollingChartData.length === 0 ? (
+            <div className="flex h-full items-center justify-center text-zinc-500">
+              Not enough historical data for a {rollingDuration}-year rolling analysis across all funds.
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={rollingChartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
+                <XAxis 
+                  dataKey="date" 
+                  stroke="#94a3b8" 
+                  tickFormatter={(val) => format(new Date(val), 'MMM yy')}
+                  minTickGap={50}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis 
+                  stroke="#94a3b8"
+                  domain={['auto', 'auto']}
+                  tickFormatter={(val) => `${val.toFixed(0)}%`}
+                  axisLine={false}
+                  tickLine={false}
+                  width={80}
+                />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px' }}
+                  itemStyle={{ fontWeight: 500 }}
+                  labelStyle={{ color: '#94a3b8', marginBottom: '8px' }}
+                  labelFormatter={(label: any) => format(new Date(label), 'MMM yyyy')}
+                  formatter={(value: any, name: any) => [`${Number(value).toFixed(2)}%`, name]}
+                />
+                <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
+                
+                {formattedFunds.map((f, i) => (
+                  <Line 
+                    key={f.schemeCode}
+                    type="monotone" 
+                    dataKey={f.name} 
+                    stroke={CHART_COLORS[i % CHART_COLORS.length]} 
+                    strokeWidth={2}
+                    dot={false}
+                    activeDot={{ r: 6, stroke: '#0f172a', strokeWidth: 2 }}
+                    connectNulls
+                  />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
 

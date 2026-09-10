@@ -55,19 +55,13 @@ export async function filterSchemes(options: FilterOptions) {
     if (maxBeta !== undefined) where.beta.lte = maxBeta;
   }
 
-  // Only return schemes that have some data if we are sorting by it
-  if (sortBy) {
-    // If not searching by query, filter out nulls for the sort field to ensure relevant results
-    if (!query) {
-      (where as any)[sortBy] = { not: null };
-    }
-  }
+
 
   const skip = (page - 1) * pageSize;
 
   const schemes = await prisma.scheme.findMany({
     where,
-    orderBy: sortBy ? { [sortBy]: sortOrder } : undefined,
+    orderBy: sortBy ? [ { [sortBy]: { sort: sortOrder, nulls: 'last' } }, { id: 'asc' } ] : { id: 'asc' },
     skip,
     take: pageSize,
   });
