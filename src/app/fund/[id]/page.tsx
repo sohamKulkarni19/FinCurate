@@ -1,7 +1,6 @@
 import { getSchemeDetails } from '@/app/actions/schemes';
 import { calculateCAGR, calculateMaxDrawdown } from '@/domain/math';
-import { ArrowLeft, RefreshCw } from 'lucide-react';
-import Link from 'next/link';
+import BackButton from '@/components/BackButton';
 import FundChart from '@/components/FundChart';
 import RollingSipAnalysis from '@/components/RollingSipAnalysis';
 import RollingLumpsumAnalysis from '@/components/RollingLumpsumAnalysis';
@@ -44,9 +43,7 @@ export default async function FundPage(props: Props) {
   return (
     <div className="max-w-6xl mx-auto pt-6 pb-20">
       <div className="flex items-center space-x-4 mb-8">
-        <Link href="/" className="p-2 bg-zinc-900 rounded-full text-zinc-400 hover:text-white transition-colors">
-          <ArrowLeft size={20} />
-        </Link>
+        <BackButton />
         <div>
           <h1 className="text-3xl font-bold text-white">{scheme.name}</h1>
           <div className="flex items-center space-x-3 mt-2 text-sm text-zinc-400">

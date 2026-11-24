@@ -72,6 +72,7 @@ async function main() {
       if (navs.length < 2) continue;
 
       const currentNav = navs[navs.length - 1];
+      if (currentNav.nav <= 0 || !isFinite(currentNav.nav)) continue;
       
       // Find closest NAVs for the time periods
       const getClosestNav = (targetDate: Date) => {
@@ -85,6 +86,9 @@ async function main() {
           }
         }
         if (minDiff > 30 * 24 * 60 * 60 * 1000) return null; // > 30 days away = no data
+        // Target historical NAV must not be the exact same point as currentNav
+        if (closest.navDate.getTime() === currentNav.navDate.getTime()) return null;
+        if (closest.nav <= 0 || !isFinite(closest.nav)) return null;
         return closest;
       };
 
@@ -151,21 +155,26 @@ async function main() {
         }
       }
 
+      const sanitize = (val: any) => {
+        if (val == null || typeof val !== 'number' || isNaN(val) || !isFinite(val)) return null;
+        return val;
+      };
+
       // Update in DB (do not write to NavObservation!)
       await prisma.scheme.update({
         where: { id: scheme.id },
         data: {
-          return3M,
-          return1Y,
-          return3Y,
-          return5Y,
-          sharpeRatio,
-          sortinoRatio,
-          beta,
-          alpha,
-          upsideCapture,
-          downsideCapture,
-          informationRatio,
+          return3M: sanitize(return3M),
+          return1Y: sanitize(return1Y),
+          return3Y: sanitize(return3Y),
+          return5Y: sanitize(return5Y),
+          sharpeRatio: sanitize(sharpeRatio),
+          sortinoRatio: sanitize(sortinoRatio),
+          beta: sanitize(beta),
+          alpha: sanitize(alpha),
+          upsideCapture: sanitize(upsideCapture),
+          downsideCapture: sanitize(downsideCapture),
+          informationRatio: sanitize(informationRatio),
           ...(apiData.meta?.scheme_category ? { category: apiData.meta.scheme_category } : {})
         }
       });

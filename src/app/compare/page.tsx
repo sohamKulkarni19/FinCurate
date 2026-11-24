@@ -16,6 +16,20 @@ import SearchAutocomplete from '@/components/SearchAutocomplete';
 // Pre-defined contrasting colors for lines
 const CHART_COLORS = ['#2dd4bf', '#818cf8', '#fbbf24', '#f87171', '#a78bfa', '#34d399'];
 
+const isValidNumber = (val: any): val is number => {
+  return val != null && typeof val === 'number' && !isNaN(val) && isFinite(val);
+};
+
+const formatPct = (val?: number | null) => {
+  if (!isValidNumber(val)) return '-';
+  return (val * 100).toFixed(2) + '%';
+};
+
+const formatNum = (val?: number | null) => {
+  if (!isValidNumber(val)) return '-';
+  return val.toFixed(2);
+};
+
 export default function ComparePage() {
   const shortlist = useShortlistStore(state => state.shortlist);
   const [loading, setLoading] = useState(true);
@@ -221,7 +235,7 @@ export default function ComparePage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto pt-6 pb-20">
+    <div className="w-full max-w-[1440px] mx-auto pt-6 px-3 sm:px-6 pb-20">
       <header className="mb-10">
         <h1 className="text-3xl font-bold text-white">Compare Funds</h1>
         <p className="text-zinc-400 mt-2">Apples-to-apples performance comparison</p>
@@ -363,38 +377,96 @@ export default function ComparePage() {
       </div>
 
       {/* Metrics Table */}
-      <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl shadow-lg overflow-hidden">
-        <div className="p-6 border-b border-zinc-800">
-          <h2 className="text-xl font-bold text-white">Performance Metrics</h2>
+      <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl shadow-xl overflow-hidden mb-8">
+        <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-white">Comprehensive Metric Comparison</h2>
+            <p className="text-xs text-zinc-400 mt-1">Side-by-side risk, return, and benchmark capture comparison.</p>
+          </div>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
+          <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-zinc-900 text-zinc-400 text-sm border-b border-zinc-800">
-                <th className="px-6 py-4 font-medium">Fund Name</th>
-                <th className="px-6 py-4 font-medium">1Y Return</th>
-                <th className="px-6 py-4 font-medium">3Y Return</th>
-                <th className="px-6 py-4 font-medium">Sharpe</th>
-                <th className="px-6 py-4 font-medium">Sortino</th>
-                <th className="px-6 py-4 font-medium">Beta</th>
-                <th className="px-6 py-4 font-medium">Max Drawdown</th>
+              <tr className="bg-zinc-900 text-zinc-400 text-xs uppercase tracking-wider border-b border-zinc-800 select-none">
+                <th className="sticky left-0 bg-zinc-900 z-10 py-3.5 px-4 min-w-[220px] max-w-[280px] font-semibold border-r border-zinc-800">
+                  Fund Name
+                </th>
+                <th className="py-3.5 px-3 text-right font-semibold whitespace-nowrap">1Y Ret</th>
+                <th className="py-3.5 px-3 text-right font-semibold whitespace-nowrap">3Y Ret</th>
+                <th className="py-3.5 px-3 text-right font-semibold whitespace-nowrap">5Y Ret</th>
+                <th className="py-3.5 px-3 text-right font-semibold whitespace-nowrap border-l border-zinc-800/40">Sharpe</th>
+                <th className="py-3.5 px-3 text-right font-semibold whitespace-nowrap">Sortino</th>
+                <th className="py-3.5 px-3 text-right font-semibold whitespace-nowrap">Beta</th>
+                <th className="py-3.5 px-3 text-right font-semibold whitespace-nowrap">Alpha</th>
+                <th className="py-3.5 px-3 text-right font-semibold whitespace-nowrap border-l border-zinc-800/40">Up Cap</th>
+                <th className="py-3.5 px-3 text-right font-semibold whitespace-nowrap">Down Cap</th>
+                <th className="py-3.5 px-3 text-right font-semibold whitespace-nowrap">Info Ratio</th>
+                <th className="py-3.5 px-3 text-right font-semibold whitespace-nowrap border-l border-zinc-800/40">Max DD</th>
+                <th className="py-3.5 px-3 text-right font-semibold whitespace-nowrap">Inception CAGR</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-800">
+            <tbody className="divide-y divide-zinc-800/50 text-[13px]">
               {metrics.map((m: any) => (
-                <tr key={m.schemeCode} className="hover:bg-zinc-800/30 transition-colors">
-                  <td className="px-6 py-4">
-                    <Link href={`/fund/${m.schemeCode}`} className="flex items-center space-x-3 group">
-                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: m.color }} />
-                      <span className="text-white font-medium group-hover:text-teal-400 transition-colors">{m.name}</span>
+                <tr key={m.schemeCode} className="hover:bg-zinc-800/30 transition-colors group">
+                  <td className="sticky left-0 bg-zinc-950/95 group-hover:bg-zinc-900/95 z-10 py-3 px-4 border-r border-zinc-800 transition-colors">
+                    <Link href={`/fund/${m.schemeCode}`} className="flex items-start space-x-2.5">
+                      <div className="w-2.5 h-2.5 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: m.color }} />
+                      <div className="min-w-0">
+                        <span className="text-white font-medium group-hover:text-teal-400 transition-colors line-clamp-1">
+                          {m.name}
+                        </span>
+                        {m.category && (
+                          <span className="text-[11px] text-zinc-500 block truncate mt-0.5">
+                            {m.category}
+                          </span>
+                        )}
+                      </div>
                     </Link>
                   </td>
-                  <td className="px-6 py-4 text-zinc-300">{m.return1Y != null ? (m.return1Y * 100).toFixed(2) + '%' : '-'}</td>
-                  <td className="px-6 py-4 text-zinc-300">{m.return3Y != null ? (m.return3Y * 100).toFixed(2) + '%' : '-'}</td>
-                  <td className="px-6 py-4 text-zinc-300">{m.sharpeRatio != null ? m.sharpeRatio.toFixed(2) : '-'}</td>
-                  <td className="px-6 py-4 text-zinc-300">{m.sortinoRatio != null ? m.sortinoRatio.toFixed(2) : '-'}</td>
-                  <td className="px-6 py-4 text-zinc-300">{m.beta != null ? m.beta.toFixed(2) : '-'}</td>
-                  <td className="px-6 py-4 font-medium text-red-400">{m.maxDrawdown.toFixed(2)}%</td>
+                  <td className={`py-3 px-3 text-right font-medium tabular-nums ${
+                    isValidNumber(m.return1Y) && m.return1Y > 0 ? 'text-teal-400' : isValidNumber(m.return1Y) && m.return1Y < 0 ? 'text-rose-400' : 'text-zinc-400'
+                  }`}>
+                    {formatPct(m.return1Y)}
+                  </td>
+                  <td className={`py-3 px-3 text-right font-medium tabular-nums ${
+                    isValidNumber(m.return3Y) && m.return3Y > 0 ? 'text-teal-400' : isValidNumber(m.return3Y) && m.return3Y < 0 ? 'text-rose-400' : 'text-zinc-400'
+                  }`}>
+                    {formatPct(m.return3Y)}
+                  </td>
+                  <td className={`py-3 px-3 text-right font-medium tabular-nums ${
+                    isValidNumber(m.return5Y) && m.return5Y > 0 ? 'text-teal-400' : isValidNumber(m.return5Y) && m.return5Y < 0 ? 'text-rose-400' : 'text-zinc-400'
+                  }`}>
+                    {formatPct(m.return5Y)}
+                  </td>
+                  <td className="py-3 px-3 text-right text-zinc-300 tabular-nums border-l border-zinc-800/40">
+                    {formatNum(m.sharpeRatio)}
+                  </td>
+                  <td className="py-3 px-3 text-right text-zinc-300 tabular-nums">
+                    {formatNum(m.sortinoRatio)}
+                  </td>
+                  <td className="py-3 px-3 text-right text-zinc-300 tabular-nums">
+                    {formatNum(m.beta)}
+                  </td>
+                  <td className={`py-3 px-3 text-right font-medium tabular-nums ${
+                    isValidNumber(m.alpha) && m.alpha > 0 ? 'text-teal-400' : isValidNumber(m.alpha) && m.alpha < 0 ? 'text-rose-400' : 'text-zinc-400'
+                  }`}>
+                    {formatPct(m.alpha)}
+                  </td>
+                  <td className="py-3 px-3 text-right text-zinc-300 tabular-nums border-l border-zinc-800/40">
+                    {isValidNumber(m.upsideCapture) ? m.upsideCapture.toFixed(1) + '%' : '-'}
+                  </td>
+                  <td className="py-3 px-3 text-right text-zinc-300 tabular-nums">
+                    {isValidNumber(m.downsideCapture) ? m.downsideCapture.toFixed(1) + '%' : '-'}
+                  </td>
+                  <td className="py-3 px-3 text-right text-zinc-300 tabular-nums">
+                    {formatNum(m.informationRatio)}
+                  </td>
+                  <td className="py-3 px-3 text-right font-medium text-rose-400 tabular-nums border-l border-zinc-800/40">
+                    {isValidNumber(m.maxDrawdown) ? m.maxDrawdown.toFixed(2) + '%' : '-'}
+                  </td>
+                  <td className="py-3 px-3 text-right font-semibold text-teal-400 tabular-nums">
+                    {isValidNumber(m.cagr) ? m.cagr.toFixed(2) + '%' : '-'}
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -15,14 +15,16 @@ export interface NavPoint {
  * Uses exact elapsed days divided by 365.2425 as per technical requirements.
  */
 export function calculateCAGR(startPoint: NavPoint, endPoint: NavPoint): number {
-  if (startPoint.nav <= 0) return 0;
+  if (startPoint.nav <= 0 || endPoint.nav <= 0) return 0;
   if (startPoint.date.getTime() >= endPoint.date.getTime()) return 0;
 
   const msPerDay = 1000 * 60 * 60 * 24;
   const elapsedDays = (endPoint.date.getTime() - startPoint.date.getTime()) / msPerDay;
   const elapsedYears = elapsedDays / 365.2425;
+  if (elapsedYears <= 0) return 0;
 
-  return Math.pow(endPoint.nav / startPoint.nav, 1 / elapsedYears) - 1;
+  const cagr = Math.pow(endPoint.nav / startPoint.nav, 1 / elapsedYears) - 1;
+  return isFinite(cagr) ? cagr : 0;
 }
 
 /**
