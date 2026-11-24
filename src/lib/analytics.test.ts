@@ -107,8 +107,8 @@ describe('Analytics Library', () => {
     });
 
     it('returns negative Sharpe for returns below risk-free rate', () => {
-      // Constant small positive daily returns that annualize below risk-free
-      const dailyReturns = Array(252).fill(0.0001);
+      // Returns with some volatility that annualize below risk-free
+      const dailyReturns = Array(252).fill(0).map((_, i) => i % 2 === 0 ? 0.0005 : -0.0003);
       const annualReturn = 0.02; // 2%, below 6% risk-free
       const sharpe = calculateSharpeRatio(annualReturn, dailyReturns);
       expect(sharpe).toBeLessThan(0);
@@ -220,7 +220,7 @@ describe('Analytics Library', () => {
 
     it('returns positive IR for outperformance with tracking error', () => {
       const bench = [0.01, -0.02, 0.015, -0.005, 0.03];
-      const fund = [0.012, -0.018, 0.017, -0.003, 0.032];
+      const fund = [0.015, -0.018, 0.022, -0.002, 0.035];
       const ir = calculateInformationRatio(fund, bench, 0.12, 0.10);
       expect(ir).toBeGreaterThan(0);
     });

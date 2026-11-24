@@ -54,7 +54,7 @@ export function calculateSharpeRatio(annualizedReturn: number, dailyReturns: num
   if (!isFinite(annualizedReturn)) return 0;
   const dailyVolatility = calculateStandardDeviation(dailyReturns);
   const annualizedVolatility = dailyVolatility * Math.sqrt(TRADING_DAYS_PER_YEAR);
-  if (annualizedVolatility === 0 || !isFinite(annualizedVolatility)) return 0;
+  if (annualizedVolatility < 0.001 || !isFinite(annualizedVolatility)) return 0;
   const sharpe = (annualizedReturn - riskFreeRate) / annualizedVolatility;
   return isFinite(sharpe) ? sharpe : 0;
 }
@@ -71,7 +71,7 @@ export function calculateSortinoRatio(annualizedReturn: number, dailyReturns: nu
   });
   const meanSquared = squaredDownside.reduce((sum, val) => sum + val, 0) / dailyReturns.length;
   const downsideDeviation = Math.sqrt(meanSquared) * Math.sqrt(TRADING_DAYS_PER_YEAR);
-  if (downsideDeviation === 0 || !isFinite(downsideDeviation)) return 0;
+  if (downsideDeviation < 0.001 || !isFinite(downsideDeviation)) return 0;
   const sortino = (annualizedReturn - riskFreeRate) / downsideDeviation;
   return isFinite(sortino) ? sortino : 0;
 }
@@ -123,7 +123,7 @@ export function calculateInformationRatio(fundReturns: number[], benchmarkReturn
   if (fundReturns.length !== benchmarkReturns.length || !isFinite(fundAnnualReturn) || !isFinite(benchAnnualReturn)) return 0;
   const activeReturns = fundReturns.map((fr, i) => fr - benchmarkReturns[i]);
   const trackingError = calculateStandardDeviation(activeReturns) * Math.sqrt(TRADING_DAYS_PER_YEAR);
-  if (trackingError === 0 || !isFinite(trackingError)) return 0;
+  if (trackingError < 0.001 || !isFinite(trackingError)) return 0;
   const ir = (fundAnnualReturn - benchAnnualReturn) / trackingError;
   return isFinite(ir) ? ir : 0;
 }
