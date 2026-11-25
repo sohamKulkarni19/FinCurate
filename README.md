@@ -7,7 +7,7 @@
 
 FinCurate 2.0 is a modern, high-performance mutual fund curation and analysis dashboard designed to help Indian retail investors make data-driven decisions. It fetches and analyzes real-time and historical NAV data from the [MFapi.in](https://www.mfapi.in/) open API.
 
-## ? Features
+##  Features
 
 - **Blazing Fast Autocomplete Search**: Instantly query a master database of over 37,000 mutual funds.
 - **Apples-to-Apples Comparisons**: Shortlist multiple funds and plot their normalized "Growth of ?10,000" on a shared, interactive timeline.
