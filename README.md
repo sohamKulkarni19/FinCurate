@@ -1,4 +1,4 @@
-# FinCurate 2.0 ??
+# FinCurate 2.0 
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-2dd4bf?style=for-the-badge&logo=vercel)](https://fincurate-sand.vercel.app/)
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
@@ -17,7 +17,7 @@ FinCurate 2.0 is a modern, high-performance mutual fund curation and analysis da
 - **Lazy Data Sync**: The system intelligently caches massive historical NAV datasets in a serverless Prisma Postgres database, ensuring instant load times on subsequent visits.
 - **Premium UI/UX**: Built with a sleek, dark glassmorphism aesthetic using Tailwind CSS and interactive charts powered by Recharts.
 
-## ?? Tech Stack
+##  Tech Stack
 
 - **Framework**: Next.js (App Router)
 - **Language**: TypeScript
